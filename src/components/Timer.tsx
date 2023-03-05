@@ -1,12 +1,11 @@
 import React from "react"
 export const Timer: React.FC = () => {
       const styles: React.CSSProperties = {
-            backgroundColor: "blue",
+            backgroundColor: "lightblue", 
             fontSize: "2em"
-      
       };
       setTimeout(tic, 1000);
-      setInterval(colorTime, 10000);
+      setTimeout(colorTime, 10000);
       const [time, setTime] = React.useState(new Date());
       const [color, setColor] = React.useState(styles);
 
@@ -15,10 +14,11 @@ export const Timer: React.FC = () => {
       }
       function colorTime() {
             setColor(styles)
-            styles.backgroundColor = "blue"?"red":"blue";     
+            styles.backgroundColor = "lightblue"?"red":"lightblue";     
       }
 
       return <div>
-            <p style={color}>{time.toLocaleTimeString()}</p>
+            <h3 style={color}>Current Time</h3>
+            <p style={styles}>{time.toLocaleTimeString()}</p>
       </div>
 }
