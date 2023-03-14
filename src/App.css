@@ -1,14 +1,5 @@
 .Appl {
   font-size: 2em ;
 }
-.time-block{
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  text-align: center;
-  border: solid;
-  border-radius: 25%;
 
-
-}
 
