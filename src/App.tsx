@@ -1,26 +1,22 @@
 import React from 'react';
 
 import './App.css';
+import { CounterMultiply } from './components/CounterMultiplay';
+import { CounterSquare } from './components/CounterSquare';
+import { CounterUpdater } from './components/CounterUpdater';
 import { Timer } from './components/Timer';
-
+import { useSelector } from 'react-redux';
+import { Logout } from './components/logout';
+import { Login } from './components/login';
 function App() {
-  const column: React.CSSProperties = {
-    display: "flex", flexDirection: "column",
-    height: "90vh", justifyContent: "center"
-  };
-  const row: React.CSSProperties = {
-    display: "flex", flexDirection: "row",
-    justifyContent: "space-around"
-  };
-  return <div style={column}>
-    <div style={row}>
-      <Timer cityCountry="London" />
-      <Timer cityCountry="Kishenev" />
-    </div>
-    <div style={row}>
-      <Timer cityCountry="Israel" />
-      <Timer cityCountry="Toronto" />
-    </div>
+  const authUser = useSelector<any,string>(state=>state.auth.authUser)
+
+  return <div style={{display:'flex', alignItems:'center',flexDirection:'column'}}>
+   {authUser && <CounterUpdater operand={10}/>}
+   {authUser.includes('admin') && <CounterMultiply factor={2}/>}
+    {authUser &&<CounterSquare/>}
+    {authUser && <Logout/>}
+    {!authUser && <Login/>}
 
   </div>
 }
