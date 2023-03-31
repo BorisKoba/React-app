@@ -18,9 +18,11 @@ export const Navigator: React.FC<Props> = ({ subnav, routes }) => {
             <li className="navigator-item" key={index}><NavLink to={route.path}>{route.label}</NavLink></li>)
     }
     return <div>
+        <nav>
         <ul className={`navigator-list ${subnav ? 'navigator-sublist' : ''}`}>
             {getItems()}
         </ul>
+        </nav>
         <Outlet/>
     </div>
 }
