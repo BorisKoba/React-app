@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+
 import './App.css';
-import { Life } from './components/Life';
 import { Bread } from './components/pages/Bread';
 import { Customers } from './components/pages/Customers';
 import { Dairy } from './components/pages/Dairy';
@@ -10,28 +10,34 @@ import { NotFound } from './components/pages/NotFound';
 import { Orders } from './components/pages/Orders';
 import { Products } from './components/navigators/Products';
 import { ShoppingCart } from './components/pages/ShoppingCart';
-import { Layout } from './components/navigators/Layout';
-
+import { routes } from './config/layout-config'
+import { Navigator } from './components/navigators/Navigators';
+import { routesProduct } from './config/products-config';
 
 function App() {
-  return <BrowserRouter>
-  <Routes>
-        <Route path='/' element={<Layout/>}>
-        <Route index element={<Home/>}/>
-          <Route path='customers' element={<Customers/>}/>
-          <Route path='orders' element={<Orders/>}/>
-          <Route path='shoppingcart' element={<ShoppingCart/>}/>
-        <Route path='products' element={<Products/>}>
-               <Route path='dairy' element={<Dairy/>}/>
-               <Route path='bread' element={<Bread/>}/> 
+
+     return <BrowserRouter>
+          <Routes>
+               <Route path='/' element={<Navigator routes={routes} />}>
+                    <Route index element={<Home />} />
+                    <Route path='customers' element={<Customers />} />
+                    <Route path='orders' element={<Orders />} />
+                    <Route path='shoppingcart' element={<ShoppingCart />} />
+                    <Route path='products' element={<Navigator subnav routes={routesProduct} />}>
+                         <Route path='dairy' element={<Dairy />} />
+                         <Route path='bread' element={<Bread />} />
+
+                    </Route>
                </Route>
-               </Route>
-               
-       
-        
-        <Route path='/*' element = {<NotFound/>}/>
-  </Routes>
-</BrowserRouter>
+
+
+
+
+
+               <Route path='/*' element={<NotFound />} />
+
+          </Routes>
+     </BrowserRouter>
 }
 
 export default App;
