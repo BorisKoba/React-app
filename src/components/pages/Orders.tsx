@@ -1,10 +1,11 @@
 import { useSelector } from "react-redux"
 import { OrderType } from "../../model/OrderType";
-import { Box, Snackbar, Alert } from "@mui/material";
+import { Box, Snackbar, Alert, Modal } from "@mui/material";
 import { useMemo, useState, useRef } from "react";
 import { DataGrid, GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
-import { LocalShipping } from "@mui/icons-material";
+import { LocalShipping, Visibility } from "@mui/icons-material";
 import { ordersService } from "../../config/orders-service-config";
+import { OrderContent } from "../OrderContent";
 const currentStrDate = new Date().toISOString().substring(0, 10);
 function checkDateFormat(date: string): boolean {
     const dateParts = date.split("-");
@@ -14,9 +15,23 @@ function checkDateFormat(date: string): boolean {
     }
     return res;
 }
+const style = {
+    position: 'absolute' as 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+  };
+  
 export const Orders: React.FC = () => {
     const [openAlert, setOpenAlert] = useState(false);
-    const alertMessage = useRef('')
+    const [openContent, setOpenContent] = useState(false);
+    const orderId = useRef('');
+    const alertMessage = useRef('');
     const orders = useSelector<any, OrderType[]>(state => state.ordersState.orders);
     const authUser = useSelector<any, string>(state => state.auth.authUser);
     const tableData = useMemo(() => getTableData(), [orders]);
@@ -28,7 +43,7 @@ export const Orders: React.FC = () => {
         return orders.map(o => ({
             id: o.id, email: o.email,
             productsAmount: o.shopping.length,
-            cost: o.shopping.reduce((res, cur) => res + cur.cost, 0),
+            cost: o.shopping.reduce((res, cur) => res + cur.cost * cur.count, 0),
             orderDate: o.orderDate, deliveryDate: o.deliveryDate
         }));
     }
@@ -47,17 +62,26 @@ export const Orders: React.FC = () => {
             {
                 field: 'deliveryDate', headerName: 'Delivery Date', flex: 0.5,
                 editable: authUser.includes('admin')
-            }
-
-        ];
+            },
+            {
+                field: 'actions', type: 'actions', getActions: params =>{
+                    const res = [<GridActionsCellItem label="details" icon={<Visibility/>} 
+                    onClick={()=>{
+                        orderId.current = params.id as string;
+                        setOpenContent(true)
+                    }}/>]
+                    if(authUser.includes("admin")){
+                        res.push(<GridActionsCellItem label="delivery"
+                         icon={<LocalShipping/>}
+                     disabled={params.row.deliveryDate}
+                        onClick={async () => await delivery(params.id as string, 
+                            new Date().toISOString().substring(0,10))}/>)
+                    }
+                    return res;
+                    }}];         
         const adminColumns: GridColDef[] = [
             { field: 'email', headerName: 'Customer', flex: 0.8 },
-            {
-                field: 'actions', type: 'actions', getActions: params =>
-                    [<GridActionsCellItem label="delivery" icon={<LocalShipping />}
-                     disabled={params.row.deliveryDate}
-                        onClick={async () => await delivery(params.id as string, currentStrDate)}></GridActionsCellItem>]
-            }
+            
         ]
         return authUser.includes('admin') ? commonColumns.concat(adminColumns) : commonColumns
     }
@@ -103,5 +127,8 @@ export const Orders: React.FC = () => {
                 {alertMessage.current}
             </Alert>
         </Snackbar>
+        <Modal open={openContent} onClose={()=>setOpenContent(false)}>
+            <OrderContent orderId={orderId.current}/>
+        </Modal>
     </Box>
 }
